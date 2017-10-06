@@ -1,29 +1,13 @@
-var StandardTokenMock = artifacts.require('./helpers/StandardTokenMock.sol');
-var ERC20ReceiveAdapterMock = artifacts.require('./helpers/ERC20ReceiveAdapterMock.sol');
+var TokenMock = artifacts.require('./helpers/StandardTokenMock.sol');
+var AdapterMock = artifacts.require('./helpers/ERC20ReceiveAdapterMock.sol');
 
-function awaitEvent(event, handler) {
-  return new Promise((resolve, reject) => {
-    function wrappedHandler(...args) {
-      Promise.resolve(handler(...args)).then(resolve).catch(reject);
-    }
-    event.watch(wrappedHandler);
-  });
-}
+const verifyReceiveAdapter = require('./helpers/verifyReceiveAdapter');
 
 contract('ERC20ReceiveAdapter', function(accounts) {
   it("should receive tokens", async function() {
-    let token = await StandardTokenMock.new(accounts[0], 100);
-    let receiver = await ERC20ReceiveAdapterMock.new();
-    let receivedEvent = receiver.Receive({});
-
-    await token.approve(receiver.address, 50);
-    await receiver.receive(token.address, 10, "test");
-    await awaitEvent(receivedEvent, async (err, result) => {
-        receivedEvent.stopWatching();
-        if (err) { throw err; }
-        assert.equal(result.args.token, token.address);
-        assert.equal(result.args.from, accounts[0]);
-        assert.equal(result.args.value, 10);
+    await verifyReceiveAdapter(accounts[0], TokenMock, AdapterMock, async (token, receiver, value, data) => {
+        await token.approve(receiver.address, value);
+        await receiver.receive(token.address, value, data);
     });
   });
 });
