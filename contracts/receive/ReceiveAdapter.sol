@@ -3,7 +3,7 @@ pragma solidity ^0.4.11;
 /**
  * @dev This adapter helps to receive tokens. It has some subcontracts for different tokens:
  *   ERC20ReceiveAdapter - for receiving simple ERC20 tokens
- *   ERC223ReceiveAdapter - for receiving ERC223 tokens
+ *   ERC667ReceiveAdapter - for receiving ERC667 tokens
  *   ReceiveApprovalAdapter - for receiving ERC20 tokens when token notifies receiver with receiveApproval
  *   CompatReceiveApproval - implements all these adapters
  */

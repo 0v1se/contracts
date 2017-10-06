@@ -1,4 +1,4 @@
-var TokenMock = artifacts.require('./helpers/StandardTokenMock.sol');
+var TokenMock = artifacts.require('./helpers/ERC20Mock.sol');
 var AdapterMock = artifacts.require('./helpers/ERC20ReceiveAdapterMock.sol');
 
 const verifyReceiveAdapter = require('./helpers/verifyReceiveAdapter');

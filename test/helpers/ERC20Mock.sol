@@ -5,9 +5,9 @@ import '../../contracts/token/ERC20Impl.sol';
 
 
 // mock class using StandardToken
-contract StandardTokenMock is ERC20Impl {
+contract ERC20Mock is ERC20Impl {
 
-  function StandardTokenMock(address initialAccount, uint256 initialBalance) {
+  function ERC20Mock(address initialAccount, uint256 initialBalance) {
     balances[initialAccount] = initialBalance;
     totalSupply = initialBalance;
   }

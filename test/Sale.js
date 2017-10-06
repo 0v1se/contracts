@@ -1,10 +1,10 @@
-var StandardTokenMock = artifacts.require('./helpers/StandardTokenMock.sol');
+var TokenMock = artifacts.require('./helpers/ERC20Mock.sol');
 var Sale = artifacts.require('./sale/Sale.sol');
 const expectThrow = require('./helpers/expectThrow');
 
 contract("Sale", accounts => {
     it("should sell tokens for ether", async () => {
-        let token = await StandardTokenMock.new(accounts[0], 100);
+        let token = await TokenMock.new(accounts[0], 100);
         let sale = await Sale.new(token.address, 10);
 
         let totalSupply = await token.totalSupply.call();
@@ -15,7 +15,7 @@ contract("Sale", accounts => {
     });
 
     it("should not sell tokens for ether if price=0", async () => {
-        let token = await StandardTokenMock.new(accounts[0], 100);
+        let token = await TokenMock.new(accounts[0], 100);
         let sale = await Sale.new(token.address, 0);
 
         let totalSupply = await token.totalSupply.call();
