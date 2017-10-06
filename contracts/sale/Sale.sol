@@ -1,10 +1,14 @@
 pragma solidity ^0.4.11;
 
-import "../math/SafeMath.sol";
+import '../math/SafeMath.sol';
 import '../ownership/Ownable.sol';
+import '../receive/CompatReceiveAdapter.sol';
 import '../token/ERC20.sol';
 
-contract Sale is Ownable {
+/**
+ * @dev Sells someone's tokens. Can accept ether or any token.
+ */
+contract Sale is CompatReceiveAdapter, Ownable {
     using SafeMath for uint256;
 
     ERC20 token;
@@ -19,31 +23,23 @@ contract Sale is Ownable {
         prices[0x0] = _price;
     }
 
-    function () payable {
-        buyTokens();
+    function onReceive(address _token, address _from, uint256 _value, bytes _data) internal {
+        uint256 tokens = getAmount(_token, _value);
+        token.transferFrom(seller, _from, tokens);
+        Purchase(_from, _token, _value, tokens);
     }
 
-    function buyTokens() payable {
-        uint256 amount = msg.value;
-
-        // calculate token amount to be created
-        uint256 tokens = getAmount(0x0, amount);
-
-        token.transferFrom(seller, msg.sender, tokens);
-        Purchase(msg.sender, 0x0, amount, tokens);
-    }
-
-    function getAmount(address _address, uint256 _amount) constant returns (uint256) {
-        uint256 price = getPrice(_address);
+    function getAmount(address _token, uint256 _amount) constant returns (uint256) {
+        uint256 price = getPrice(_token);
         require(price > 0);
         return _amount.div(price);
     }
 
-    function getPrice(address _address) constant returns (uint256) {
-        return prices[_address];
+    function getPrice(address _token) constant returns (uint256) {
+        return prices[_token];
     }
 
-    function setPrice(address _address, uint256 _price) onlyOwner {
-        prices[_address] = _price;
+    function setPrice(address _token, uint256 _price) onlyOwner {
+        prices[_token] = _price;
     }
 }

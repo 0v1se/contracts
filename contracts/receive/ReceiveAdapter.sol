@@ -5,6 +5,7 @@ pragma solidity ^0.4.11;
  *   ERC20ReceiveAdapter - for receiving simple ERC20 tokens
  *   ERC667ReceiveAdapter - for receiving ERC667 tokens
  *   ReceiveApprovalAdapter - for receiving ERC20 tokens when token notifies receiver with receiveApproval
+ *   EtherReceiveAdapter - for receiving ether (onReceive callback will be used). this is needed for handling ether like tokens
  *   CompatReceiveApproval - implements all these adapters
  */
 contract ReceiveAdapter {

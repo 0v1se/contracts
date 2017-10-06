@@ -10,7 +10,7 @@ contract("Sale", accounts => {
         let totalSupply = await token.totalSupply.call();
         await token.approve(sale.address, totalSupply.toNumber());
 
-        await sale.buyTokens({from: accounts[1], value: 100});
+        await sale.sendTransaction({from: accounts[1], value: 100});
         assert.equal(await token.balanceOf.call(accounts[1]), 10);
     });
 
@@ -22,7 +22,7 @@ contract("Sale", accounts => {
         await token.approve(sale.address, totalSupply.toNumber());
 
         try {
-            await sale.buyTokens({from: accounts[1], value: 100});
+            await sale.sendTransaction({from: accounts[1], value: 100});
         } catch (e) {
             return;
         }
