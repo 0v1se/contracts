@@ -1,11 +1,11 @@
 pragma solidity ^0.4.11;
 
 
-import './StandardToken.sol';
+import './ERC20Impl.sol';
 import './ERC667.sol';
 
 
-contract NotifyToken is StandardToken, ERC667 {
+contract ERC667Impl is ERC20Impl, ERC667 {
     function transferAndCall(address _to, uint256 _value, bytes _data) returns (bool){
         require(_to != address(0));
         require(_value <= balances[msg.sender]);
