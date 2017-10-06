@@ -14,6 +14,17 @@ contract("Sale", accounts => {
         assert.equal(await token.balanceOf.call(accounts[1]), 10);
     });
 
+    it("should send tokens to provided address", async () => {
+        let token = await TokenMock.new(accounts[0], 100);
+        let sale = await Sale.new(token.address, 10);
+
+        let totalSupply = await token.totalSupply.call();
+        await token.approve(sale.address, totalSupply.toNumber());
+
+        await sale.receiveEtherAndData(accounts[1].toString(), {value: 100});
+        assert.equal((await token.balanceOf.call(accounts[1])).toNumber(), 5);
+    });
+
     it("should not sell tokens for ether if price=0", async () => {
         let token = await TokenMock.new(accounts[0], 100);
         let sale = await Sale.new(token.address, 0);
@@ -65,5 +76,17 @@ contract("Sale", accounts => {
         tokens = await sale.getTokens.call();
         assert.equal(tokens.length, 1);
         assert.equal(tokens[0], "0x0000000000000000000000000000000000000002");
+    });
+
+    it("should do something", async () => {
+        let token = await TokenMock.new(accounts[0], 100);
+        let sale = await Sale.new(token.address, 0);
+
+        let bytes = await sale.toBytes(accounts[1]);
+        console.log(bytes);
+        console.log(bytes.length);
+        console.log(accounts[1].toString().length);
+        console.log(await sale.toAddress(accounts[1].toString()));
+        console.log(accounts[1].toString());
     });
 });
