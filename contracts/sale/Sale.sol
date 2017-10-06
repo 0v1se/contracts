@@ -20,7 +20,7 @@ contract Sale is CompatReceiveAdapter, Ownable {
     function Sale(address _token, uint256 _price) {
         token = ERC20(_token);
         seller = msg.sender;
-        prices[0x0] = _price;
+        prices[address(0)] = _price;
     }
 
     function onReceive(address _token, address _from, uint256 _value, bytes _data) internal {
