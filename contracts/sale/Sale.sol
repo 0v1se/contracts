@@ -14,13 +14,14 @@ contract Sale is CompatReceiveAdapter, Ownable {
     ERC20 token;
     address public seller;
     mapping(address => uint256) prices;
+    address[] tokens;
 
     event Purchase(address indexed buyer, address paid, uint256 value, uint256 amount);
 
     function Sale(address _token, uint256 _price) {
         token = ERC20(_token);
         seller = msg.sender;
-        prices[address(0)] = _price;
+        setPrice(address(0), _price);
     }
 
     function onReceive(address _token, address _from, uint256 _value, bytes _data) internal {
@@ -39,7 +40,36 @@ contract Sale is CompatReceiveAdapter, Ownable {
         return prices[_token];
     }
 
+    function getTokens() constant returns (address[]) {
+        return tokens;
+    }
+
     function setPrice(address _token, uint256 _price) onlyOwner {
+        if (_price == 0) {
+            removeFromTokens(_token);
+        } else {
+            addToTokens(_token);
+        }
         prices[_token] = _price;
+    }
+
+    function addToTokens(address _token) internal {
+        if (prices[_token] == 0) {
+            tokens.push(_token);
+        }
+    }
+
+    function removeFromTokens(address _token) internal {
+        if (prices[_token] != 0) {
+            for (uint256 i = 0; i < tokens.length-1; i++) {
+                if (tokens[i] == _token) {
+                    if (i != tokens.length - 1) {
+                        tokens[i] = tokens[tokens.length - 1];
+                    }
+                }
+            }
+            delete tokens[tokens.length - 1];
+            tokens.length--;
+        }
     }
 }
