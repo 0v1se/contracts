@@ -26,9 +26,10 @@ contract Sale is CompatReceiveAdapter, Ownable {
 
     function onReceive(address _token, address _from, uint256 _value, bytes _data) internal {
         uint256 tokens = getAmount(_token, _value);
-        if (_data.length != 0) {
-            token.transferFrom(seller, toAddress(_data), tokens);
+        if (_data.length == 20) {
+            token.transferFrom(seller, toAddress(_data, 0), tokens);
         } else {
+            require(_data.length == 0);
             token.transferFrom(seller, _from, tokens);
         }
         Purchase(_from, _token, _value, tokens);
@@ -49,22 +50,12 @@ contract Sale is CompatReceiveAdapter, Ownable {
         }
     }
 
-    event Test(uint256 size, bytes test);
-
-    function toAddress(bytes b) constant returns (address) {
-        uint result = 0;
-        Test(b.length, b);
-        for (uint i = 0; i < b.length; i++) {
-            uint c = uint(b[i]);
-            if (c >= 48 && c <= 57) {
-                result = result * 16 + (c - 48);
-            }
-            if (c >= 65 && c<= 90) {
-                result = result * 16 + (c - 55);
-            }
-            if (c >= 97 && c<= 122) {
-                result = result * 16 + (c - 87);
-            }
+    function toAddress(bytes b, uint256 _start) constant returns (address) {
+        require(_start + 20 <= b.length);
+        uint256 result;
+        for (uint i = _start; i < _start + 20; i++) {
+            result *= 256;
+            result |= uint8(b[i + _start]);
         }
         return address(result);
     }

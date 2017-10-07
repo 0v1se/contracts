@@ -21,8 +21,8 @@ contract("Sale", accounts => {
         let totalSupply = await token.totalSupply.call();
         await token.approve(sale.address, totalSupply.toNumber());
 
-        await sale.receiveEtherAndData(accounts[1].toString(), {value: 100});
-        assert.equal((await token.balanceOf.call(accounts[1])).toNumber(), 5);
+        await sale.receiveEtherAndData(accounts[1], {value: 100});
+        assert.equal((await token.balanceOf.call(accounts[1])).toNumber(), 10);
     });
 
     it("should not sell tokens for ether if price=0", async () => {
@@ -78,15 +78,17 @@ contract("Sale", accounts => {
         assert.equal(tokens[0], "0x0000000000000000000000000000000000000002");
     });
 
-    it("should do something", async () => {
-        let token = await TokenMock.new(accounts[0], 100);
-        let sale = await Sale.new(token.address, 0);
-
-        let bytes = await sale.toBytes(accounts[1]);
-        console.log(bytes);
-        console.log(bytes.length);
-        console.log(accounts[1].toString().length);
-        console.log(await sale.toAddress(accounts[1].toString()));
-        console.log(accounts[1].toString());
-    });
+//    it("should do something", async () => {
+//        let token = await TokenMock.new(accounts[0], 100);
+//        let sale = await Sale.new(token.address, 0);
+//
+//        let bytes = await sale.toBytes(accounts[1]);
+//        console.log(bytes);
+//        console.log(bytes.length);
+//        console.log(accounts[1].toString().length);
+//        console.log(await sale.toAddress(accounts[1].toString()));
+//        console.log(typeof bytes);
+//        console.log(await sale.toBytesLength(accounts[1]));
+//        console.log(accounts[1].toString());
+//    });
 });
