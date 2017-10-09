@@ -7,8 +7,8 @@ import '../ownership/Ownable.sol';
 
 contract ExternalToken is ERC667Impl, Ownable {
     event Mint(address indexed to, uint256 value, bytes tx);
-    event BuyBackRequest(address indexed burner, uint256 value, bytes data);
-    event BuyBackResponse(bytes32 indexed tx, uint256 indexed logIndex, bytes data);
+    event Burn(address indexed burner, uint256 value, bytes data);
+    event BurnResponse(bytes32 indexed tx, uint256 indexed logIndex, bytes data);
 
     function mint(address _to, uint256 _value, bytes _tx) onlyOwner public returns (bool) {
         _mint(_to, _value, _tx);
@@ -29,7 +29,7 @@ contract ExternalToken is ERC667Impl, Ownable {
         Mint(_to, _value, _tx);
     }
 
-    function requestBuyBack(uint256 _value, bytes _data) {
+    function burn(uint256 _value, bytes _data) {
         require(_value > 0);
         require(_value <= balances[msg.sender]);
         checkBuyBackData(_value, _data);
@@ -37,11 +37,11 @@ contract ExternalToken is ERC667Impl, Ownable {
         address burner = msg.sender;
         balances[burner] = balances[burner].sub(_value);
         totalSupply = totalSupply.sub(_value);
-        BuyBackRequest(burner, _value, _data);
+        Burn(burner, _value, _data);
     }
 
-    function setBuyBackResponse(bytes32 _tx, uint256 _logIndex, bytes _data) onlyOwner public {
-        BuyBackResponse(_tx, _logIndex, _data);
+    function setBurnResponse(bytes32 _tx, uint256 _logIndex, bytes _data) onlyOwner public {
+        BurnResponse(_tx, _logIndex, _data);
     }
 
     function checkBuyBackData(uint256 _value, bytes _data) internal {

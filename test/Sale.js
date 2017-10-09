@@ -1,6 +1,5 @@
 var TokenMock = artifacts.require('./helpers/ERC20Mock.sol');
 var Sale = artifacts.require('./sale/Sale.sol');
-const expectThrow = require('./helpers/expectThrow');
 
 contract("Sale", accounts => {
     it("should sell tokens for ether", async () => {

@@ -3,7 +3,6 @@
 const BigNumber = web3.BigNumber
 
 const assertJump = require('./helpers/assertJump');
-const expectThrow = require('./helpers/expectThrow');
 require('chai')
   .use(require('chai-as-promised'))
   .use(require('chai-bignumber')(BigNumber))
