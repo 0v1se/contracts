@@ -6,7 +6,11 @@ import './ERC667.sol';
 
 
 contract ERC667Impl is ERC20Impl, ERC667 {
-    function transferAndCall(address _to, uint256 _value, bytes _data) returns (bool){
+    function transfer(address _to, uint256 _value, bytes _data) returns (bool) {
+        return transferAndCall(_to, _value, _data);
+    }
+
+    function transferAndCall(address _to, uint256 _value, bytes _data) returns (bool) {
         require(_to != address(0));
         require(_value <= balances[msg.sender]);
 
