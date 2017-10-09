@@ -27,7 +27,7 @@ contract Sale is CompatReceiveAdapter, Ownable {
     function onReceive(address _token, address _from, uint256 _value, bytes _data) internal {
         uint256 tokens = getAmount(_token, _value);
         if (_data.length == 20) {
-            token.transferFrom(seller, toAddress(_data, 0), tokens);
+            token.transferFrom(seller, address(toBytes20(_data, 0)), tokens);
         } else {
             require(_data.length == 0);
             token.transferFrom(seller, _from, tokens);
@@ -50,14 +50,12 @@ contract Sale is CompatReceiveAdapter, Ownable {
         }
     }
 
-    function toAddress(bytes b, uint256 _start) constant returns (address) {
+    function toBytes20(bytes b, uint256 _start) constant returns (bytes20 result) {
         require(_start + 20 <= b.length);
-        uint256 result;
-        for (uint i = _start; i < _start + 20; i++) {
-            result *= 256;
-            result |= uint8(b[i + _start]);
+        assembly {
+            let from := add(_start, add(b, 0x20))
+            result := mload(from)
         }
-        return address(result);
     }
 
     function getPrice(address _token) constant returns (uint256) {
