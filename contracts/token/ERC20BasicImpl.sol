@@ -26,8 +26,12 @@ contract ERC20BasicImpl is ERC20Basic {
     // SafeMath.sub will throw if there is not enough balance.
     balances[msg.sender] = balances[msg.sender].sub(_value);
     balances[_to] = balances[_to].add(_value);
-    Transfer(msg.sender, _to, _value);
+    emitTransfer(msg.sender, _to, _value);
     return true;
+  }
+
+  function emitTransfer(address _from, address _to, uint256 _value) internal {
+    Transfer(_from, _to, _value);
   }
 
   /**

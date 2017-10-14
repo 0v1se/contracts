@@ -24,6 +24,10 @@ contract Sale is CompatReceiveAdapter, Ownable {
         setPrice(address(0), _price);
     }
 
+    function getTokenAddress() returns (address) {
+        return address(token);
+    }
+
     function onReceive(address _token, address _from, uint256 _value, bytes _data) internal {
         uint256 tokens = getAmount(_token, _value);
         if (_data.length == 20) {

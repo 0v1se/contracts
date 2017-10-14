@@ -17,8 +17,16 @@ contract ERC667Impl is ERC20Impl, ERC667 {
         // SafeMath.sub will throw if there is not enough balance.
         balances[msg.sender] = balances[msg.sender].sub(_value);
         balances[_to] = balances[_to].add(_value);
-        Transfer(msg.sender, _to, _value, _data);
+        emitTransferWithData(msg.sender, _to, _value, _data);
         require(_to.call(bytes4(bytes32(sha3("onTokenTransfer(address,uint256,bytes)"))), msg.sender, _value, _data));
         return true;
+    }
+
+    function emitTransfer(address _from, address _to, uint256 _value) internal {
+        emitTransferWithData(_from, _to, _value, "");
+    }
+
+    function emitTransferWithData(address _from, address _to, uint256 _value, bytes _data) internal {
+        Transfer(_from, _to, _value, _data);
     }
 }

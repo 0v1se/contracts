@@ -31,7 +31,7 @@ contract ERC20Impl is ERC20, ERC20BasicImpl {
     balances[_from] = balances[_from].sub(_value);
     balances[_to] = balances[_to].add(_value);
     allowed[_from][msg.sender] = allowed[_from][msg.sender].sub(_value);
-    Transfer(_from, _to, _value);
+    emitTransfer(_from, _to, _value);
     return true;
   }
 
