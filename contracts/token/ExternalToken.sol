@@ -6,6 +6,7 @@ import '../ownership/Ownable.sol';
 
 
 contract ExternalToken is ERC667Impl, Ownable {
+    event Mint(address indexed to, uint256 value);
     event Mint(address indexed to, uint256 value, bytes data);
     event Burn(address indexed burner, uint256 value, bytes data);
 
@@ -26,6 +27,7 @@ contract ExternalToken is ERC667Impl, Ownable {
         totalSupply = totalSupply.add(_value);
         balances[_to] = balances[_to].add(_value);
         Mint(_to, _value, _data);
+        Mint(_to, _value);
     }
 
     function burn(uint256 _value, bytes _data) {

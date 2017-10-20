@@ -28,5 +28,6 @@ contract ERC667Impl is ERC20Impl, ERC667 {
 
     function emitTransferWithData(address _from, address _to, uint256 _value, bytes _data) internal {
         Transfer(_from, _to, _value, _data);
+        Transfer(_from, _to, _value);
     }
 }
