@@ -60,24 +60,4 @@ contract("ExternalToken", accounts => {
         assert.equal(burn.args.value, 50);
         assert.equal(burn.args.data, "0x64617461");
     });
-
-    it("should log BurnResponse", async () => {
-        const token = await ExternalToken.new();
-        const burnResponseEvent = token.BurnResponse({});
-
-        await token.setBurnResponse("0x3671902191f40285d3ee633929bd0eb3ba8ae4effefd49b8ed6fd6ddaeffa95e", "0x0a", "data");
-        let burnResponse = await awaitEvent(burnResponseEvent);
-        assert.equal(burnResponse.args.tx, "0x3671902191f40285d3ee633929bd0eb3ba8ae4effefd49b8ed6fd6ddaeffa95e");
-        assert.equal(burnResponse.args.logIndex, 10);
-        assert.equal(burnResponse.args.data, "0x64617461");
-    });
-
-    it("should not let log BurnResponse if not owner", async () => {
-        const token = await ExternalToken.new();
-        const burnResponseEvent = token.BurnResponse({});
-
-        await expectThrow(
-            token.setBurnResponse("0x3671902191f40285d3ee633929bd0eb3ba8ae4effefd49b8ed6fd6ddaeffa95e", "0x0a", "data", {from: accounts[1]})
-        );
-    });
 });
