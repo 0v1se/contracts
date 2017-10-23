@@ -3,6 +3,7 @@ pragma solidity ^0.4.11;
 
 import './ERC20Impl.sol';
 import './ERC667.sol';
+import '../receive/ERC667Receiver.sol';
 
 
 contract ERC667Impl is ERC20Impl, ERC667 {
@@ -18,7 +19,7 @@ contract ERC667Impl is ERC20Impl, ERC667 {
         balances[msg.sender] = balances[msg.sender].sub(_value);
         balances[_to] = balances[_to].add(_value);
         emitTransferWithData(msg.sender, _to, _value, _data);
-        require(_to.call(bytes4(bytes32(sha3("onTokenTransfer(address,uint256,bytes)"))), msg.sender, _value, _data));
+        ERC667Receiver(_to).onTokenTransfer(msg.sender, _value, _data);
         return true;
     }
 

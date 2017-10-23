@@ -1,7 +1,7 @@
 pragma solidity ^0.4.11;
 
 
-import '../../contracts/receive/ERC667ReceiveAdapter.sol';
+import './ERC667ReceiveAdapter.sol';
 import './ReceiveAdapterMock.sol';
 
 

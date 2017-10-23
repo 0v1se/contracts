@@ -1,5 +1,5 @@
 var TokenMock = artifacts.require('./helpers/ERC667Mock.sol');
-var AdapterMock = artifacts.require('./helpers/ERC667ReceiveAdapterMock.sol');
+var AdapterMock = artifacts.require('./receive/ERC667ReceiveAdapterMock.sol');
 
 const verifyReceiveAdapter = require('./helpers/verifyReceiveAdapter');
 

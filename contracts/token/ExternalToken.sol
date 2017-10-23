@@ -3,6 +3,7 @@ pragma solidity ^0.4.11;
 
 import './ERC667Impl.sol';
 import '../ownership/Ownable.sol';
+import '../receive/ERC667Receiver.sol';
 
 
 contract ExternalToken is ERC667Impl, Ownable {
@@ -19,7 +20,7 @@ contract ExternalToken is ERC667Impl, Ownable {
     function mintAndCall(address _to, uint256 _value, bytes _mintData, bytes _data) onlyOwner public returns (bool) {
         _mint(_to, _value, _mintData);
         emitTransferWithData(0x0, _to, _value, _data);
-        require(_to.call(bytes4(bytes32(sha3("onTokenTransfer(address,uint256,bytes)"))), 0x0, _value, _data));
+        ERC667Receiver(_to).onTokenTransfer(0x0, _value, _data);
         return true;
     }
 

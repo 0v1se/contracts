@@ -36,7 +36,7 @@ contract("ExternalToken", accounts => {
         const mintEvent = token.Mint({});
         const receiveEvent = receiver.Receive({});
 
-        await token.mintAndCall(receiver.address, 100, "tx", "data");
+        await token.mintAndCall(receiver.address, 100, "tx", "0xffff");
         assert.equal(await token.balanceOf.call(receiver.address), 100);
         let mint = await awaitEvent(mintEvent);
         assert.equal(mint.args.to, receiver.address);
@@ -46,6 +46,7 @@ contract("ExternalToken", accounts => {
         assert.equal(receive.args.token, token.address);
         assert.equal(receive.args.value, 100);
         assert.equal(receive.args.from, "0x0000000000000000000000000000000000000000");
+        assert.equal(receive.args.data, "0xffff");
     });
 
     it("should burn tokens", async () => {
