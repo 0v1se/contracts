@@ -2,11 +2,10 @@ pragma solidity ^0.4.11;
 
 
 import './ERC667Impl.sol';
-import '../ownership/Ownable.sol';
 import '../receive/ERC667Receiver.sol';
 
 
-contract ExternalToken is ERC667Impl, Ownable {
+contract ExternalToken is ERC667Impl {
     event Mint(address indexed to, uint256 value);
     event Mint(address indexed to, uint256 value, bytes data);
     event Burn(address indexed burner, uint256 value, bytes data);
@@ -31,7 +30,7 @@ contract ExternalToken is ERC667Impl, Ownable {
         Mint(_to, _value);
     }
 
-    function burn(uint256 _value, bytes _data) {
+    function burn(uint256 _value, bytes _data) whenNotPaused public {
         require(_value > 0);
         require(_value <= balances[msg.sender]);
         checkBuyBackData(_value, _data);

@@ -3,13 +3,14 @@ pragma solidity ^0.4.11;
 
 import './ERC20Basic.sol';
 import '../math/SafeMath.sol';
+import '../lifecycle/Pausable.sol';
 
 
 /**
  * @title Basic token
  * @dev Basic version of StandardToken, with no allowances.
  */
-contract ERC20BasicImpl is ERC20Basic {
+contract ERC20BasicImpl is ERC20Basic, Pausable {
   using SafeMath for uint256;
 
   mapping(address => uint256) balances;
@@ -19,7 +20,7 @@ contract ERC20BasicImpl is ERC20Basic {
   * @param _to The address to transfer to.
   * @param _value The amount to be transferred.
   */
-  function transfer(address _to, uint256 _value) public returns (bool) {
+  function transfer(address _to, uint256 _value) whenNotPaused public returns (bool) {
     require(_to != address(0));
     require(_value <= balances[msg.sender]);
 

@@ -2,6 +2,8 @@ const assertJump = require('./helpers/assertJump');
 
 var TokenMock = artifacts.require("./helpers/ERC20BasicMock.sol");
 
+import expectThrow from './helpers/expectThrow';
+
 contract('ERC20BasicImpl', function(accounts) {
 
   it("should return the correct totalSupply after construction", async function() {
@@ -40,6 +42,14 @@ contract('ERC20BasicImpl', function(accounts) {
     } catch(error) {
       assertJump(error);
     }
+  });
+
+  it('should throw an error when paused', async function() {
+    let token = await TokenMock.new(accounts[0], 100);
+    await token.pause();
+    await expectThrow(
+      token.transfer(accounts[1], 100)
+    );
   });
 
 });

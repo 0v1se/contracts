@@ -49,6 +49,16 @@ contract("ExternalToken", accounts => {
         assert.equal(receive.args.data, "0xffff");
     });
 
+    it("should not let burn if paused", async () => {
+        const token = await ExternalToken.new();
+        await token.mint(accounts[1], 100, "tx");
+        await token.pause();
+
+        await expectThrow(
+            token.burn(50, "data", {from: accounts[1]})
+        );
+    });
+
     it("should burn tokens", async () => {
         const token = await ExternalToken.new();
         await token.mint(accounts[1], 100, "tx");

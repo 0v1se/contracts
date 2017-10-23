@@ -9,6 +9,8 @@ require('chai')
   .should()
 var TokenMock = artifacts.require('./helpers/ERC20Mock.sol');
 
+import expectThrow from './helpers/expectThrow';
+
 contract('StandardToken', function(accounts) {
 
   let token;
@@ -64,6 +66,16 @@ contract('StandardToken', function(accounts) {
 
     let balance2 = await token.balanceOf(accounts[1]);
     assert.equal(balance2, 0);
+  });
+
+  it('should throw when paused', async function() {
+    let token = await TokenMock.new(accounts[0], 100);
+    await token.approve(accounts[1], 100);
+    await token.pause();
+
+    await expectThrow(
+      token.transferFrom(accounts[0], accounts[2], 100, {from: accounts[1]})
+    );
   });
 
   it('should throw an error when trying to transfer more than allowed', async function() {
