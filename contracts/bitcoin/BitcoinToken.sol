@@ -17,6 +17,7 @@ contract BitcoinToken is ExternalToken {
 
     function checkBuyBackData(uint256 _value, bytes _data) internal {
         require(_value >= minimalBurn);
+        require(_data.length == 20);
     }
 
     function setMinimalBurn(uint256 _minimalBurn) onlyOwner public {
