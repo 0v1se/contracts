@@ -1,5 +1,12 @@
 var TokenMock = artifacts.require('./helpers/ERC20Mock.sol');
 var Sale = artifacts.require('./sale/Sale.sol');
+var ExternalToken = artifacts.require('./token/ExternalToken.sol');
+
+const BigNumber = web3.BigNumber
+require('chai')
+  .use(require('chai-as-promised'))
+  .use(require('chai-bignumber')(BigNumber))
+  .should()
 
 contract("Sale", accounts => {
     it("should sell tokens for ether", async () => {
@@ -77,17 +84,37 @@ contract("Sale", accounts => {
         assert.equal(tokens[0], "0x0000000000000000000000000000000000000002");
     });
 
-//    it("should do something", async () => {
-//        let token = await TokenMock.new(accounts[0], 100);
-//        let sale = await Sale.new(token.address, 0);
-//
-//        let bytes = await sale.toBytes(accounts[1]);
-//        console.log(bytes);
-//        console.log(bytes.length);
-//        console.log(accounts[1].toString().length);
-//        console.log(await sale.toAddress(accounts[1].toString()));
-//        console.log(typeof bytes);
-//        console.log(await sale.toBytesLength(accounts[1]));
-//        console.log(accounts[1].toString());
-//    });
+    it("should withdraw ethers", async () => {
+        let token = await TokenMock.new(accounts[0], 100);
+        let sale = await Sale.new(token.address, 10);
+
+        let totalSupply = await token.totalSupply.call();
+        await token.approve(sale.address, totalSupply.toNumber());
+
+        await sale.sendTransaction({from: accounts[1], value: 100});
+        assert.equal(await token.balanceOf.call(accounts[1]), 10);
+
+        let acc3Balance = await web3.eth.getBalance(accounts[2]);
+        await sale.withdraw("0x0", accounts[2], 100);
+        acc3Balance.plus(100).should.be.bignumber.equal(await web3.eth.getBalance(accounts[2]));
+    });
+
+    it("should withdraw tokens", async () => {
+        let token = await TokenMock.new(accounts[0], 100);
+        let sale = await Sale.new(token.address, 10);
+        let btc = await ExternalToken.new();
+
+        await sale.setPrice();
+
+        let totalSupply = await token.totalSupply.call();
+        await token.approve(sale.address, totalSupply.toNumber());
+
+        await sale.sendTransaction({from: accounts[1], value: 100});
+        assert.equal(await token.balanceOf.call(accounts[1]), 10);
+
+        let acc3Balance = await web3.eth.getBalance(accounts[2]);
+        await sale.withdraw("0x0", accounts[2], 100);
+        acc3Balance.plus(100).should.be.bignumber.equal(await web3.eth.getBalance(accounts[2]));
+    });
+
 });

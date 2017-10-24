@@ -4,6 +4,7 @@ import '../math/SafeMath.sol';
 import '../ownership/Ownable.sol';
 import '../receive/CompatReceiveAdapter.sol';
 import '../token/ERC20.sol';
+import '../token/ExternalToken.sol';
 
 /**
  * @dev Sells someone's tokens. Can accept ether or any token.
@@ -17,6 +18,8 @@ contract Sale is CompatReceiveAdapter, Ownable {
     address[] tokens;
 
     event Purchase(address indexed buyer, address paid, uint256 value, uint256 amount);
+    event Withdraw(address token, address to, uint256 value);
+    event Burn(address token, uint256 value, bytes data);
 
     function Sale(address _token, uint256 _price) {
         token = ERC20(_token);
@@ -97,5 +100,20 @@ contract Sale is CompatReceiveAdapter, Ownable {
             delete tokens[tokens.length - 1];
             tokens.length--;
         }
+    }
+
+    function withdraw(address _token, address _to, uint256 _amount) onlyOwner public {
+        require(_to != address(0));
+        if (_token == address(0)) {
+            _to.transfer(_amount);
+        } else {
+            ERC20(_token).transfer(_to, _amount);
+        }
+        Withdraw(_token, _to, _amount);
+    }
+
+    function burnWithData(address _token, uint256 _amount, bytes _data) onlyOwner public {
+        ExternalToken(_token).burn(_amount, _data);
+        Burn(_token, _amount, _data);
     }
 }
