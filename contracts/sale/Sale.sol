@@ -18,8 +18,6 @@ contract Sale is CompatReceiveAdapter, Ownable {
     address[] tokens;
 
     event Purchase(address indexed buyer, address paid, uint256 value, uint256 amount);
-    event Withdraw(address token, address to, uint256 value);
-    event Burn(address token, uint256 value, bytes data);
 
     function Sale(address _token, uint256 _price) {
         token = ERC20(_token);
@@ -109,11 +107,9 @@ contract Sale is CompatReceiveAdapter, Ownable {
         } else {
             ERC20(_token).transfer(_to, _amount);
         }
-        Withdraw(_token, _to, _amount);
     }
 
     function burnWithData(address _token, uint256 _amount, bytes _data) onlyOwner public {
         ExternalToken(_token).burn(_amount, _data);
-        Burn(_token, _amount, _data);
     }
 }
