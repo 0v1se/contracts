@@ -81,6 +81,16 @@ contract("Sale", accounts => {
         acc3Balance.plus(100).should.be.bignumber.equal(await btc.balanceOf.call(accounts[2]));
     });
 
+    it("should calculate total", async () => {
+        let token = await TokenMock.new(accounts[0], 100);
+        let sale = await Sale.new(token.address, 0);
+
+        let totalSupply = await token.totalSupply.call();
+        await token.approve(sale.address, totalSupply.toNumber());
+
+        assert.equal((await sale.getTotal.call()).toNumber(), totalSupply.toNumber());
+    });
+
     it("should burn tokens", async () => {
         let token = await TokenMock.new(accounts[0], 100);
         let sale = await Sale.new(token.address, 0);

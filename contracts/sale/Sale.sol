@@ -21,4 +21,8 @@ contract Sale is AbstractSale {
     function doPurchase(address buyer, uint256 amount) internal {
         token.transferFrom(seller, buyer, amount);
     }
+
+    function getTotal() public constant returns (uint256) {
+        return token.allowance(seller, this);
+    }
 }
