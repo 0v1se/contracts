@@ -24,7 +24,7 @@ contract AbstractSale is CompatReceiveAdapter, Ownable {
             buyer = address(toBytes20(_data, 0));
         } else {
             require(_data.length == 0);
-            buyer = from;
+            buyer = _from;
         }
         Purchase(buyer, _token, _value, tokens);
         doPurchase(buyer, tokens);
