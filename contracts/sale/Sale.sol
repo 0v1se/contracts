@@ -13,7 +13,7 @@ contract Sale is AbstractSale {
 
     address public seller;
 
-    function Sale(address _token, uint256 _price) AbstractSale(_price) {
+    function Sale(address _token) {
         token = ERC20(_token);
         seller = msg.sender;
     }

@@ -13,23 +13,21 @@ contract AbstractSale is CompatReceiveAdapter, Ownable {
     using SafeMath for uint256;
 
     event PriceChange(address token, uint256 price);
-    event Purchase(address indexed buyer, address paid, uint256 value, uint256 amount);
+    event Purchase(address indexed buyer, address token, uint256 value, uint256 amount);
 
     mapping (address => uint256) prices;
 
-    function AbstractSale(uint256 _price) {
-        setPrice(address(0), _price);
-    }
-
     function onReceive(address _token, address _from, uint256 _value, bytes _data) internal {
         uint256 tokens = getAmount(_token, _value);
+        address buyer;
         if (_data.length == 20) {
-            doPurchase(address(toBytes20(_data, 0)), tokens);
+            buyer = address(toBytes20(_data, 0));
         } else {
             require(_data.length == 0);
-            doPurchase(_from, tokens);
+            buyer = from;
         }
-        Purchase(_from, _token, _value, tokens);
+        Purchase(buyer, _token, _value, tokens);
+        doPurchase(buyer, tokens);
     }
 
     function doPurchase(address buyer, uint256 amount) internal;
