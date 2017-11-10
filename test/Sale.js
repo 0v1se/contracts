@@ -10,31 +10,37 @@ require('chai')
   .should()
 
 contract("Sale", accounts => {
+    function bn(value) {
+        return new web3.BigNumber(value);
+    }
+
     it("should sell tokens for ether", async () => {
-        let token = await TokenMock.new(accounts[0], 100);
-        let sale = await Sale.new(token.address, 10);
+        let token = await TokenMock.new(accounts[0], 1000000);
+        let sale = await Sale.new(token.address);
+        await sale.setRate("0x0000000000000000000000000000000000000000", bn("10000000000000000000"));
 
         let totalSupply = await token.totalSupply.call();
         await token.approve(sale.address, totalSupply.toNumber());
 
         await sale.sendTransaction({from: accounts[1], value: 100});
-        assert.equal(await token.balanceOf.call(accounts[1]), 10);
+        assert.equal((await token.balanceOf(accounts[1])).toNumber(), 1000);
     });
 
     it("should send tokens to provided address", async () => {
-        let token = await TokenMock.new(accounts[0], 100);
-        let sale = await Sale.new(token.address, 10);
+        let token = await TokenMock.new(accounts[0], 100000);
+        let sale = await Sale.new(token.address);
+        await sale.setRate("0x0000000000000000000000000000000000000000", bn("10000000000000000000"));
 
         let totalSupply = await token.totalSupply.call();
         await token.approve(sale.address, totalSupply.toNumber());
 
         await sale.receiveEtherAndData(accounts[1], {value: 100});
-        assert.equal((await token.balanceOf.call(accounts[1])).toNumber(), 10);
+        assert.equal((await token.balanceOf.call(accounts[1])).toNumber(), 1000);
     });
 
-    it("should not sell tokens for ether if price=0", async () => {
+    it("should not sell tokens for ether if rate=0", async () => {
         let token = await TokenMock.new(accounts[0], 100);
-        let sale = await Sale.new(token.address, 0);
+        let sale = await Sale.new(token.address);
 
         let totalSupply = await token.totalSupply.call();
         await token.approve(sale.address, totalSupply.toNumber());
@@ -44,18 +50,19 @@ contract("Sale", accounts => {
         } catch (e) {
             return;
         }
-        assert(false, "should throw because price <=0");
+        assert(false, "should throw because rate == 0");
     });
 
     it("should withdraw ethers", async () => {
-        let token = await TokenMock.new(accounts[0], 100);
-        let sale = await Sale.new(token.address, 10);
+        let token = await TokenMock.new(accounts[0], 100000);
+        let sale = await Sale.new(token.address);
+        await sale.setRate("0x0000000000000000000000000000000000000000", bn("1000000000000000000"));
 
         let totalSupply = await token.totalSupply.call();
         await token.approve(sale.address, totalSupply.toNumber());
 
         await sale.sendTransaction({from: accounts[1], value: 100});
-        assert.equal(await token.balanceOf.call(accounts[1]), 10);
+        assert.equal(await token.balanceOf.call(accounts[1]), 100);
 
         let acc3Balance = await web3.eth.getBalance(accounts[2]);
         await sale.withdraw("0x0", accounts[2], 100);
@@ -63,18 +70,18 @@ contract("Sale", accounts => {
     });
 
     it("should withdraw tokens", async () => {
-        let token = await TokenMock.new(accounts[0], 100);
-        let sale = await Sale.new(token.address, 0);
+        let token = await TokenMock.new(accounts[0], 1000000);
+        let sale = await Sale.new(token.address);
         let btc = await ExternalToken.new();
+        await sale.setRate(btc.address, bn("100000000000000000000"));
 
-        await sale.setPrice(btc.address, 10);
         await btc.mint(accounts[1], 100, "");
 
         let totalSupply = await token.totalSupply.call();
         await token.approve(sale.address, totalSupply.toNumber());
 
         await btc.transferAndCall(sale.address, 100, "", {from: accounts[1]});
-        assert.equal(await token.balanceOf.call(accounts[1]), 10);
+        assert.equal(await token.balanceOf.call(accounts[1]), 10000);
 
         let acc3Balance = await btc.balanceOf.call(accounts[2]);
         await sale.withdraw(btc.address, accounts[2], 100);
@@ -82,8 +89,8 @@ contract("Sale", accounts => {
     });
 
     it("should calculate total", async () => {
-        let token = await TokenMock.new(accounts[0], 100);
-        let sale = await Sale.new(token.address, 0);
+        let token = await TokenMock.new(accounts[0], 10000);
+        let sale = await Sale.new(token.address);
 
         let totalSupply = await token.totalSupply.call();
         await token.approve(sale.address, totalSupply.toNumber());
@@ -92,19 +99,19 @@ contract("Sale", accounts => {
     });
 
     it("should burn tokens", async () => {
-        let token = await TokenMock.new(accounts[0], 100);
-        let sale = await Sale.new(token.address, 0);
+        let token = await TokenMock.new(accounts[0], 100000);
+        let sale = await Sale.new(token.address);
         let btc = await ExternalToken.new();
         let burnEvent = btc.Burn({});
 
-        await sale.setPrice(btc.address, 10);
+        await sale.setRate(btc.address, bn("100000000000000000000"));
         await btc.mint(accounts[1], 100, "");
 
         let totalSupply = await token.totalSupply.call();
         await token.approve(sale.address, totalSupply.toNumber());
 
         await btc.transferAndCall(sale.address, 100, "", {from: accounts[1]});
-        assert.equal(await token.balanceOf.call(accounts[1]), 10);
+        assert.equal(await token.balanceOf.call(accounts[1]), 10000);
 
         let acc3Balance = await btc.balanceOf.call(accounts[2]);
         await sale.burnWithData(btc.address, 100, '0xffffff');
